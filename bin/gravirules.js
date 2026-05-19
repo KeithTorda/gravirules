@@ -16,6 +16,7 @@ Usage:
 Options:
   --target <path>     Install into a specific project directory. Defaults to current directory.
   --force             Replace existing .agent and AGENTS.md without creating backups.
+  --fresh             Alias for --force. Use for clean reinstall.
   --no-agents-md      Install .agent only.
   --dry-run           Print planned actions without writing files.
   -h, --help          Show help.
@@ -24,10 +25,10 @@ Options:
 Examples:
   npx github:KeithTorda/gravirules init
   npm install -g github:KeithTorda/gravirules
-  ag-kit init
-  npx @keithtorda/gravirules init
+  ag-kit init --fresh
+  npx @keithtorda/gravirules init --fresh
   npm install -g @keithtorda/gravirules
-  ag-kit init
+  ag-kit init --fresh
 `);
 }
 
@@ -58,7 +59,7 @@ function parseArgs(argv) {
       continue;
     }
 
-    if (arg === "--force") {
+    if (arg === "--force" || arg === "--fresh") {
       options.force = true;
       continue;
     }
@@ -164,6 +165,50 @@ function prepareDestination(destination, options) {
   console.log(`Backed up ${path.basename(destination)} -> ${path.basename(backup)}`);
 }
 
+function isManagedAgent(destinationAgent) {
+  const marker = path.join(destinationAgent, ".gravirules.json");
+  if (fs.existsSync(marker)) {
+    try {
+      const data = JSON.parse(fs.readFileSync(marker, "utf8"));
+      if (data.package === "@keithtorda/gravirules") {
+        return true;
+      }
+    } catch (_) {
+      return false;
+    }
+  }
+
+  const indexPath = path.join(destinationAgent, "INDEX.md");
+  const rulesPath = path.join(destinationAgent, "rules", "GEMINI.md");
+  for (const candidate of [indexPath, rulesPath]) {
+    if (fs.existsSync(candidate)) {
+      const text = fs.readFileSync(candidate, "utf8");
+      if (text.includes("GraviRules")) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+function writeInstallMarker(destinationAgent, options) {
+  const marker = path.join(destinationAgent, ".gravirules.json");
+  const data = {
+    package: "@keithtorda/gravirules",
+    kit: "GraviRules",
+    version: VERSION,
+    installedAt: new Date().toISOString(),
+  };
+
+  if (options.dryRun) {
+    console.log(`[dry-run] write ${marker}`);
+    return;
+  }
+
+  fs.writeFileSync(marker, `${JSON.stringify(data, null, 2)}\n`, "utf8");
+}
+
 function copyRecursive(source, destination, options) {
   const stat = fs.statSync(source);
 
@@ -198,12 +243,19 @@ function installKit(options) {
   ensureTargetDirectory(options.target, options);
 
   const destinationAgent = path.join(options.target, ".agent");
-  prepareDestination(destinationAgent, options);
+  const managedAgent = fs.existsSync(destinationAgent) && isManagedAgent(destinationAgent);
+  const replaceOptions = managedAgent ? { ...options, force: true } : options;
+  if (managedAgent && !options.force && !options.dryRun) {
+    console.log("Updating existing GraviRules .agent without creating a backup.");
+  }
+
+  prepareDestination(destinationAgent, replaceOptions);
   copyRecursive(sourceAgent, destinationAgent, options);
+  writeInstallMarker(destinationAgent, options);
 
   if (options.installAgentsMd) {
     const destinationAgentsMd = path.join(options.target, "AGENTS.md");
-    prepareDestination(destinationAgentsMd, options);
+    prepareDestination(destinationAgentsMd, replaceOptions);
     copyRecursive(sourceAgentsMd, destinationAgentsMd, options);
   }
 

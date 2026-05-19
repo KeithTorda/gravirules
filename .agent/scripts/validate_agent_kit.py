@@ -14,6 +14,7 @@ from pathlib import Path
 REQUIRED_PATHS = [
     "AGENTS.md",
     ".agent/INDEX.md",
+    ".agent/.gravirules.json",
     ".agent/ARCHITECTURE.md",
     ".agent/rules/GEMINI.md",
     ".agent/mcp_config.json",
@@ -82,7 +83,12 @@ def validate_required_paths(root: Path) -> tuple[list[str], list[str]]:
 
 def validate_json_files(root: Path) -> list[str]:
     errors: list[str] = []
-    for config in (root / ".agent/mcp_config.json", root / ".agent/scripts/checks.json", root / "package.json"):
+    for config in (
+        root / ".agent/.gravirules.json",
+        root / ".agent/mcp_config.json",
+        root / ".agent/scripts/checks.json",
+        root / "package.json",
+    ):
         if not config.exists():
             continue
         try:

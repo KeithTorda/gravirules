@@ -14,9 +14,7 @@ This folder is a non-destructive improved copy of the existing `.agent` kit.
 From `C:\Users\admin\Desktop\CSCsystem`:
 
 ```powershell
-Copy-Item -LiteralPath ".agent" -Destination ".agent_backup_$(Get-Date -Format yyyyMMddHHmmss)" -Recurse
-Copy-Item -LiteralPath ".agent_improved\.agent" -Destination ".agent" -Recurse -Force
-Copy-Item -LiteralPath ".agent_improved\AGENTS.md" -Destination "AGENTS.md" -Force
+npx github:KeithTorda/gravirules init --fresh
 ```
 
 ## Verify
