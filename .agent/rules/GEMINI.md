@@ -17,16 +17,15 @@ Use this loading order:
 
 Do not bulk-load the whole kit. Read indexes first, then specific files.
 
-## GraviRules Package Development
+## Kit Hygiene
 
-When improving this agent kit itself:
+When improving or reinstalling this kit:
 
-- Treat `.agent_improved/` as the Git-backed source package.
-- Edit `.agent_improved/.agent/...` first.
-- Sync into the active workspace `.agent/` only after package validation passes.
+- Keep installed files limited to `.agent/` and `AGENTS.md`.
+- Do not include local caches, logs, archives, generated package tarballs, machine-specific paths, or temporary test folders.
+- Re-run validation after installer or kit structure changes.
 - Do not commit or push unless the user explicitly asks.
-- Keep active `.agent/` and package `.agent_improved/.agent/` aligned before final reporting.
-- Verify package installer behavior when installer-related files change.
+- Verify installer behavior when installer-related files change.
 
 ## Task Lifecycle
 
@@ -143,7 +142,7 @@ Use the narrowest reliable proof first:
 | Script/helper change | Run the script help path and one real command |
 | Backend/data logic | Native tests plus validation/checklist where relevant |
 | UI change | Native tests/build plus browser or screenshot check when possible |
-| Package installer change | `npm.cmd run check`, `npm.cmd pack --dry-run --cache .npm-cache`, installer smoke test |
+| Package installer change | `npm.cmd run check`, `npm.cmd pack --dry-run`, installer smoke test |
 | Release-grade change | `python .agent\scripts\verify_all.py . --skip-url-checks` plus native build/test |
 
 If broad checks fail on unrelated pre-existing project files, report that clearly and do not hide it.

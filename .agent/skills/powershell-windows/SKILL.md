@@ -91,7 +91,7 @@ Write-Output "Value: $value"
 
 | Pattern | Use |
 |---------|-----|
-| Literal path | `C:\Users\User\file.txt` |
+| Literal path | `.\file.txt` |
 | Variable path | `Join-Path $env:USERPROFILE "file.txt"` |
 | Relative | `Join-Path $ScriptDir "data"` |
 

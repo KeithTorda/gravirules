@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import Any
 
 
-EXCLUDE_DIRS = {".git", "node_modules", ".next", "dist", "build", ".agent", ".gemini", "__pycache__", ".npm-cache"}
+EXCLUDE_DIRS = {".git", "node_modules", ".next", "dist", "build", ".agent", ".gemini", "__pycache__"}
 
 
 def read_json(path: Path) -> dict[str, Any]:

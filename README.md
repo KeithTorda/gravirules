@@ -30,7 +30,7 @@ npm install -g @keithtorda/gravirules
 ag-kit init --fresh
 ```
 
-The installer copies `.agent` and `AGENTS.md` into the current project. Existing GraviRules installs are updated in place without creating `.agent_backup_*` folders. Existing non-GraviRules `.agent` or `AGENTS.md` files are backed up automatically unless you pass `--fresh` or `--force`.
+The installer copies only the clean GraviRules `.agent` and `AGENTS.md` templates into the current project. Existing GraviRules installs are updated in place without creating extra folders. If a non-GraviRules `.agent` or `AGENTS.md` already exists, install stops unless you choose `--fresh` to replace it cleanly.
 
 ## What This Includes
 
@@ -55,14 +55,7 @@ npx github:KeithTorda/gravirules init --fresh
 Manual install from a cloned copy:
 
 ```powershell
-Copy-Item -LiteralPath "C:\path\to\gravirules\.agent" -Destination ".agent" -Recurse -Force
-Copy-Item -LiteralPath "C:\path\to\gravirules\AGENTS.md" -Destination "AGENTS.md" -Force
-```
-
-If the target project already has `.agent`, back it up first:
-
-```powershell
-Copy-Item -LiteralPath ".agent" -Destination ".agent_backup_$(Get-Date -Format yyyyMMddHHmmss)" -Recurse
+node bin\gravirules.js init --target ..\your-project --fresh
 ```
 
 ## Validate

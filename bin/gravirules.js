@@ -15,7 +15,7 @@ Usage:
 
 Options:
   --target <path>     Install into a specific project directory. Defaults to current directory.
-  --force             Replace existing .agent and AGENTS.md without creating backups.
+  --force             Replace existing .agent and AGENTS.md.
   --fresh             Alias for --force. Use for clean reinstall.
   --no-agents-md      Install .agent only.
   --dry-run           Print planned actions without writing files.
@@ -108,40 +108,6 @@ function ensureTargetDirectory(target, options) {
   }
 }
 
-function timestamp() {
-  const now = new Date();
-  const pad = (value) => String(value).padStart(2, "0");
-  return [
-    now.getFullYear(),
-    pad(now.getMonth() + 1),
-    pad(now.getDate()),
-    pad(now.getHours()),
-    pad(now.getMinutes()),
-    pad(now.getSeconds()),
-  ].join("");
-}
-
-function backupPath(destination) {
-  const parsed = path.parse(destination);
-  const stamp = timestamp();
-  const base = parsed.ext
-    ? path.join(parsed.dir, `${parsed.name}.backup_${stamp}${parsed.ext}`)
-    : `${destination}_backup_${stamp}`;
-
-  if (!fs.existsSync(base)) {
-    return base;
-  }
-
-  for (let index = 1; index < 100; index += 1) {
-    const candidate = `${base}.${index}`;
-    if (!fs.existsSync(candidate)) {
-      return candidate;
-    }
-  }
-
-  throw new Error(`Could not allocate backup path for ${destination}`);
-}
-
 function prepareDestination(destination, options) {
   if (!fs.existsSync(destination)) {
     return;
@@ -156,13 +122,8 @@ function prepareDestination(destination, options) {
     return;
   }
 
-  const backup = backupPath(destination);
-  if (options.dryRun) {
-    console.log(`[dry-run] backup ${destination} -> ${backup}`);
-    return;
-  }
-  fs.renameSync(destination, backup);
-  console.log(`Backed up ${path.basename(destination)} -> ${path.basename(backup)}`);
+  const name = path.basename(destination);
+  throw new Error(`${name} already exists. Use --fresh to replace it cleanly.`);
 }
 
 function isManagedAgent(destinationAgent) {
@@ -246,7 +207,7 @@ function installKit(options) {
   const managedAgent = fs.existsSync(destinationAgent) && isManagedAgent(destinationAgent);
   const replaceOptions = managedAgent ? { ...options, force: true } : options;
   if (managedAgent && !options.force && !options.dryRun) {
-    console.log("Updating existing GraviRules .agent without creating a backup.");
+    console.log("Updating existing GraviRules .agent in place.");
   }
 
   prepareDestination(destinationAgent, replaceOptions);

@@ -49,7 +49,7 @@ def main() -> int:
     ]
 
     if (project / "package.json").exists():
-        checks.append(("npm package dry-run", ["npm.cmd", "pack", "--dry-run", "--cache", ".npm-cache"]))
+        checks.append(("npm package dry-run", ["npm.cmd", "pack", "--dry-run"]))
 
     results = [run_command(name, command, project) for name, command in checks]
     summary = {

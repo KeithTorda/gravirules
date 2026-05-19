@@ -1,6 +1,6 @@
 {
   "name": "@keithtorda/gravirules",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Portable Antigravity rules, agents, skills, workflows, and validation scripts.",
   "license": "MIT",
   "type": "commonjs",

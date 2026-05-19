@@ -1,6 +1,6 @@
-# Install The Improved Antigravity Kit
+# Install GraviRules
 
-This folder is a non-destructive improved copy of the existing `.agent` kit.
+This repository contains the clean GraviRules Antigravity kit.
 
 ## Contents
 
@@ -11,7 +11,7 @@ This folder is a non-destructive improved copy of the existing `.agent` kit.
 
 ## Install
 
-From `C:\Users\admin\Desktop\CSCsystem`:
+From any project root:
 
 ```powershell
 npx github:KeithTorda/gravirules init --fresh
