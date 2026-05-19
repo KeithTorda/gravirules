@@ -1,0 +1,43 @@
+{
+  "name": "@keithtorda/gravirules",
+  "version": "1.0.0",
+  "description": "Portable Antigravity rules, agents, skills, workflows, and validation scripts.",
+  "license": "MIT",
+  "type": "commonjs",
+  "bin": {
+    "gravirules": "bin/gravirules.js",
+    "ag-kit": "bin/gravirules.js"
+  },
+  "files": [
+    "AGENTS.md",
+    "INSTALL.md",
+    "README.md",
+    ".agent/**",
+    "!**/__pycache__/**",
+    "!**/*.pyc",
+    "bin/**"
+  ],
+  "scripts": {
+    "check": "node bin/gravirules.js --help && python .agent/scripts/validate_agent_kit.py .",
+    "pack:dry": "npm pack --dry-run"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KeithTorda/gravirules.git"
+  },
+  "bugs": {
+    "url": "https://github.com/KeithTorda/gravirules/issues"
+  },
+  "homepage": "https://github.com/KeithTorda/gravirules#readme",
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "antigravity",
+    "agents",
+    "agent-skills",
+    "ai-tools",
+    "gemini",
+    "agents-md"
+  ]
+}

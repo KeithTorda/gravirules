@@ -2,6 +2,29 @@
 
 Portable Antigravity workspace kit with rules, specialist agents, skills, workflows, memory, and validation scripts.
 
+## Quick Install
+
+Use directly from GitHub now:
+
+```powershell
+npx github:KeithTorda/gravirules init
+```
+
+After publishing to npm:
+
+```powershell
+npx @keithtorda/gravirules init
+```
+
+Or install globally:
+
+```powershell
+npm install -g @keithtorda/gravirules
+ag-kit init
+```
+
+The installer copies `.agent` and `AGENTS.md` into the current project. Existing `.agent` or `AGENTS.md` files are backed up automatically unless you pass `--force`.
+
 ## What This Includes
 
 - `AGENTS.md` - cross-tool project instructions.
@@ -16,7 +39,13 @@ Portable Antigravity workspace kit with rules, specialist agents, skills, workfl
 
 ## Install Into A Project
 
-From the project root where you want to use the kit:
+Recommended:
+
+```powershell
+npx github:KeithTorda/gravirules init
+```
+
+Manual install from a cloned copy:
 
 ```powershell
 Copy-Item -LiteralPath "C:\path\to\gravirules\.agent" -Destination ".agent" -Recurse -Force
