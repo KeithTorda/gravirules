@@ -4,6 +4,9 @@
   "description": "Portable Antigravity rules, agents, skills, workflows, and validation scripts.",
   "license": "MIT",
   "type": "commonjs",
+  "publishConfig": {
+    "access": "public"
+  },
   "bin": {
     "gravirules": "bin/gravirules.js",
     "ag-kit": "bin/gravirules.js"

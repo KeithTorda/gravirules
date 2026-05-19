@@ -23,6 +23,8 @@ Options:
 
 Examples:
   npx github:KeithTorda/gravirules init
+  npm install -g github:KeithTorda/gravirules
+  ag-kit init
   npx @keithtorda/gravirules init
   npm install -g @keithtorda/gravirules
   ag-kit init

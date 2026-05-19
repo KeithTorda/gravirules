@@ -10,6 +10,13 @@ Use directly from GitHub now:
 npx github:KeithTorda/gravirules init
 ```
 
+Global install from GitHub before npm publishing:
+
+```powershell
+npm install -g github:KeithTorda/gravirules
+ag-kit init
+```
+
 After publishing to npm:
 
 ```powershell
@@ -93,6 +100,16 @@ python .agent\scripts\validate_agent_kit.py .
 python .agent\scripts\checklist.py . --scope kit
 python .agent\scripts\verify_all.py . --skip-url-checks
 python .agent\scripts\doctor.py .
+```
+
+## Publish To npm
+
+The npm commands below work only after this package is published to the npm registry:
+
+```powershell
+npm login
+npm publish --access public
+npm view @keithtorda/gravirules version
 ```
 
 ## Notes
