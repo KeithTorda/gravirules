@@ -1,148 +1,145 @@
 #!/usr/bin/env python3
-"""
-Auto Preview - AG Kit
-==============================
-Manages (start/stop/status) the local development server for previewing the application.
+"""Start, stop, and inspect a local preview server."""
 
-Usage:
-    python .agent/scripts/auto_preview.py start [port]
-    python .agent/scripts/auto_preview.py stop
-    python .agent/scripts/auto_preview.py status
-"""
+from __future__ import annotations
 
-import os
-import sys
-import time
-import json
-import signal
 import argparse
+import json
+import os
+import signal
 import subprocess
+import sys
 from pathlib import Path
 
-AGENT_DIR = Path(".agent")
-PID_FILE = AGENT_DIR / "preview.pid"
-LOG_FILE = AGENT_DIR / "preview.log"
 
-def get_project_root():
-    return Path(".").resolve()
+STATE_FILE = Path(".agent") / "preview.json"
+LOG_FILE = Path(".agent") / "preview.log"
 
-def is_running(pid):
+
+def read_package(root: Path) -> dict:
+    package_json = root / "package.json"
+    if not package_json.exists():
+        return {}
+    return json.loads(package_json.read_text(encoding="utf-8"))
+
+
+def npm_executable() -> str:
+    return "npm.cmd" if os.name == "nt" else "npm"
+
+
+def detect_command(root: Path) -> list[str] | None:
+    scripts = read_package(root).get("scripts", {})
+    if "dev" in scripts:
+        return [npm_executable(), "run", "dev"]
+    if "start" in scripts:
+        return [npm_executable(), "run", "start"]
+    return None
+
+
+def is_running(pid: int) -> bool:
     try:
         os.kill(pid, 0)
         return True
     except OSError:
         return False
 
-def get_start_command(root):
-    pkg_file = root / "package.json"
-    if not pkg_file.exists():
-        return None
-    
-    with open(pkg_file, 'r') as f:
-        data = json.load(f)
-    
-    scripts = data.get("scripts", {})
-    if "dev" in scripts:
-        return ["npm", "run", "dev"]
-    elif "start" in scripts:
-        return ["npm", "start"]
-    return None
 
-def start_server(port=3000):
-    if PID_FILE.exists():
-        try:
-            pid = int(PID_FILE.read_text().strip())
-            if is_running(pid):
-                print(f"⚠️  Preview already running (PID: {pid})")
-                return
-        except:
-            pass # Invalid PID file
+def read_state() -> dict:
+    if not STATE_FILE.exists():
+        return {}
+    try:
+        return json.loads(STATE_FILE.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return {}
 
-    root = get_project_root()
-    cmd = get_start_command(root)
-    
-    if not cmd:
-        print("❌ No 'dev' or 'start' script found in package.json")
-        sys.exit(1)
-    
-    # Add port env var if needed (simple heuristic)
+
+def write_state(state: dict) -> None:
+    STATE_FILE.parent.mkdir(parents=True, exist_ok=True)
+    STATE_FILE.write_text(json.dumps(state, indent=2), encoding="utf-8")
+
+
+def start_server(root: Path, port: int) -> int:
+    existing = read_state()
+    existing_pid = existing.get("pid")
+    if isinstance(existing_pid, int) and is_running(existing_pid):
+        print(f"[SKIP] Preview already running: PID {existing_pid}, URL {existing.get('url', 'unknown')}")
+        return 0
+
+    command = detect_command(root)
+    if not command:
+        print("[FAIL] No dev or start script found in package.json", file=sys.stderr)
+        return 1
+
     env = os.environ.copy()
     env["PORT"] = str(port)
-    
-    print(f"🚀 Starting preview on port {port}...")
-    
-    with open(LOG_FILE, "w") as log:
-        process = subprocess.Popen(
-            cmd,
-            cwd=str(root),
-            stdout=log,
-            stderr=log,
-            env=env,
-            shell=True # Required for npm on windows often, or consistent path handling
-        )
-    
-    PID_FILE.write_text(str(process.pid))
-    print(f"✅ Preview started! (PID: {process.pid})")
-    print(f"   Logs: {LOG_FILE}")
-    print(f"   URL: http://localhost:{port}")
+    LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
+    log = LOG_FILE.open("w", encoding="utf-8")
+    process = subprocess.Popen(command, cwd=str(root), stdout=log, stderr=log, env=env)
+    write_state({"pid": process.pid, "url": f"http://localhost:{port}", "command": command, "log": str(LOG_FILE)})
+    print(f"[PASS] Preview started: PID {process.pid}")
+    print(f"URL: http://localhost:{port}")
+    print(f"Log: {LOG_FILE}")
+    return 0
 
-def stop_server():
-    if not PID_FILE.exists():
-        print("ℹ️  No preview server found.")
-        return
 
-    try:
-        pid = int(PID_FILE.read_text().strip())
-        if is_running(pid):
-            # Try gentle kill first
-            os.kill(pid, signal.SIGTERM) if sys.platform != 'win32' else subprocess.call(['taskkill', '/F', '/T', '/PID', str(pid)])
-            print(f"🛑 Preview stopped (PID: {pid})")
-        else:
-            print("ℹ️  Process was not running.")
-    except Exception as e:
-        print(f"❌ Error stopping server: {e}")
-    finally:
-        if PID_FILE.exists():
-            PID_FILE.unlink()
+def stop_server() -> int:
+    state = read_state()
+    pid = state.get("pid")
+    if not isinstance(pid, int):
+        print("[SKIP] No preview server state found")
+        return 0
 
-def status_server():
-    running = False
-    pid = None
-    url = "Unknown"
-    
-    if PID_FILE.exists():
-        try:
-            pid = int(PID_FILE.read_text().strip())
-            if is_running(pid):
-                running = True
-                # Heuristic for URL, strictly we should save it
-                url = "http://localhost:3000" 
-        except:
-            pass
-            
-    print("\n=== Preview Status ===")
-    if running:
-        print(f"✅ Status: Running")
-        print(f"🔢 PID: {pid}")
-        print(f"🌐 URL: {url} (Likely)")
-        print(f"📝 Logs: {LOG_FILE}")
+    if not is_running(pid):
+        print("[SKIP] Preview process is not running")
+        STATE_FILE.unlink(missing_ok=True)
+        return 0
+
+    if os.name == "nt":
+        subprocess.run(["taskkill", "/F", "/T", "/PID", str(pid)], capture_output=True, text=True)
     else:
-        print("⚪ Status: Stopped")
-    print("===================\n")
+        os.kill(pid, signal.SIGTERM)
+    STATE_FILE.unlink(missing_ok=True)
+    print(f"[PASS] Preview stopped: PID {pid}")
+    return 0
 
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("action", choices=["start", "stop", "status"])
-    parser.add_argument("port", nargs="?", default="3000")
-    
+
+def status_server(json_output: bool) -> int:
+    state = read_state()
+    pid = state.get("pid")
+    running = isinstance(pid, int) and is_running(pid)
+    payload = {
+        "running": running,
+        "pid": pid if isinstance(pid, int) else None,
+        "url": state.get("url"),
+        "log": state.get("log", str(LOG_FILE)),
+    }
+    if json_output:
+        print(json.dumps(payload, indent=2))
+    else:
+        status = "running" if running else "stopped"
+        print(f"Preview status: {status}")
+        if running:
+            print(f"PID: {payload['pid']}")
+            print(f"URL: {payload['url']}")
+            print(f"Log: {payload['log']}")
+    return 0
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description="Manage a local preview server")
+    parser.add_argument("action", choices=("start", "stop", "status"))
+    parser.add_argument("port", nargs="?", type=int, default=3000)
+    parser.add_argument("--project", default=".", help="Project root")
+    parser.add_argument("--json", action="store_true", help="Print JSON for status")
     args = parser.parse_args()
-    
+
+    root = Path(args.project).resolve()
     if args.action == "start":
-        start_server(int(args.port))
-    elif args.action == "stop":
-        stop_server()
-    elif args.action == "status":
-        status_server()
+        return start_server(root, args.port)
+    if args.action == "stop":
+        return stop_server()
+    return status_server(args.json)
+
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

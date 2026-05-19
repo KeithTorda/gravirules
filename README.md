@@ -64,8 +64,21 @@ Run from a project root after installing:
 
 ```powershell
 python .agent\scripts\validate_agent_kit.py .
-python .agent\scripts\checklist.py .
+python .agent\scripts\checklist.py . --scope quick
 ```
+
+## Memory
+
+GraviRules includes persistent, non-sensitive memory for stable user preferences, project conventions, decisions, feedback, and references:
+
+```powershell
+python .agent\scripts\memory.py list
+python .agent\scripts\memory.py search "keyword"
+python .agent\scripts\memory.py save --type project --summary "Use PowerShell on Windows"
+python .agent\scripts\memory.py validate
+```
+
+Memory is stored in `.agent/memory/`. Do not store secrets, tokens, credentials, private keys, customer data, or temporary debug notes.
 
 For release-grade checks with a running web app:
 
@@ -77,8 +90,9 @@ For validating this kit repository itself:
 
 ```powershell
 python .agent\scripts\validate_agent_kit.py .
-python .agent\scripts\checklist.py .
+python .agent\scripts\checklist.py . --scope kit
 python .agent\scripts\verify_all.py . --skip-url-checks
+python .agent\scripts\doctor.py .
 ```
 
 ## Notes

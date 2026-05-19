@@ -6,10 +6,12 @@ This repository uses an Antigravity-compatible agent kit in `.agent/`.
 
 - Read `.agent/INDEX.md` before planning non-trivial work.
 - Use `.agent/rules/GEMINI.md` for Antigravity-specific baseline behavior.
+- Read `.agent/memory/MEMORY.md` for meaningful work and apply relevant memory silently.
 - Load only the specialist agent and skills relevant to the user request.
 - Prefer small, verifiable changes over broad rewrites.
 - Preserve user changes. Do not revert or overwrite unrelated files.
 - Never run destructive commands without explicit user approval.
+- Do not commit or push unless explicitly requested.
 - Verify implementation with the narrowest reliable command first, then broader checks when risk justifies it.
 - Keep final responses concise and include what changed, how it was verified, and any remaining risk.
 
@@ -49,3 +51,11 @@ python .agent\scripts\verify_all.py . --url http://localhost:3000
 ```
 
 `verify_all.py` needs a running app URL for browser and performance checks.
+
+## Memory
+
+```powershell
+python .agent\scripts\memory.py list
+python .agent\scripts\memory.py search "keyword"
+python .agent\scripts\memory.py validate
+```

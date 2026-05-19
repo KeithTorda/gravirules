@@ -1,0 +1,143 @@
+{
+  "checks": [
+    {
+      "name": "Kit Structure",
+      "category": "Kit",
+      "script": ".agent/scripts/validate_agent_kit.py",
+      "required": true,
+      "timeout": 120,
+      "scopes": ["kit", "quick", "project", "release"]
+    },
+    {
+      "name": "Memory Validation",
+      "category": "Kit",
+      "script": ".agent/scripts/memory.py",
+      "args": ["--project", "{project}", "validate"],
+      "required": false,
+      "timeout": 120,
+      "scopes": ["kit", "quick", "project", "release"]
+    },
+    {
+      "name": "Security Scan",
+      "category": "Security",
+      "script": ".agent/skills/vulnerability-scanner/scripts/security_scan.py",
+      "required": true,
+      "timeout": 300,
+      "scopes": ["quick", "project", "release", "backend", "security"]
+    },
+    {
+      "name": "Dependency Analysis",
+      "category": "Security",
+      "script": ".agent/skills/vulnerability-scanner/scripts/dependency_analyzer.py",
+      "required": false,
+      "timeout": 180,
+      "scopes": ["project", "release", "security"]
+    },
+    {
+      "name": "Lint Check",
+      "category": "Code Quality",
+      "script": ".agent/skills/lint-and-validate/scripts/lint_runner.py",
+      "required": false,
+      "timeout": 300,
+      "scopes": ["quick", "project", "release", "backend", "frontend", "mobile"]
+    },
+    {
+      "name": "Type Coverage",
+      "category": "Code Quality",
+      "script": ".agent/skills/lint-and-validate/scripts/type_coverage.py",
+      "required": false,
+      "timeout": 300,
+      "scopes": ["project", "release"]
+    },
+    {
+      "name": "Schema Validation",
+      "category": "Data",
+      "script": ".agent/skills/database-design/scripts/schema_validator.py",
+      "required": false,
+      "timeout": 180,
+      "scopes": ["project", "release", "backend", "database"]
+    },
+    {
+      "name": "Test Runner",
+      "category": "Testing",
+      "script": ".agent/skills/testing-patterns/scripts/test_runner.py",
+      "required": false,
+      "timeout": 300,
+      "scopes": ["quick", "project", "release", "backend", "frontend"]
+    },
+    {
+      "name": "UX Audit",
+      "category": "UX",
+      "script": ".agent/skills/frontend-design/scripts/ux_audit.py",
+      "required": false,
+      "timeout": 300,
+      "scopes": ["project", "release", "frontend", "ui"]
+    },
+    {
+      "name": "Accessibility Check",
+      "category": "UX",
+      "script": ".agent/skills/frontend-design/scripts/accessibility_checker.py",
+      "required": false,
+      "timeout": 300,
+      "scopes": ["project", "release", "frontend", "ui"]
+    },
+    {
+      "name": "SEO Check",
+      "category": "SEO",
+      "script": ".agent/skills/seo-fundamentals/scripts/seo_checker.py",
+      "required": false,
+      "timeout": 180,
+      "scopes": ["project", "release", "seo"]
+    },
+    {
+      "name": "GEO Check",
+      "category": "SEO",
+      "script": ".agent/skills/geo-fundamentals/scripts/geo_checker.py",
+      "required": false,
+      "timeout": 180,
+      "scopes": ["release", "seo"]
+    },
+    {
+      "name": "Bundle Analysis",
+      "category": "Performance",
+      "script": ".agent/skills/performance-profiling/scripts/bundle_analyzer.py",
+      "required": false,
+      "timeout": 180,
+      "scopes": ["project", "release", "frontend", "performance"]
+    },
+    {
+      "name": "Lighthouse Audit",
+      "category": "Performance",
+      "script": ".agent/skills/performance-profiling/scripts/lighthouse_audit.py",
+      "required": false,
+      "timeout": 600,
+      "requires_url": true,
+      "scopes": ["release", "frontend", "performance"]
+    },
+    {
+      "name": "Playwright E2E",
+      "category": "E2E",
+      "script": ".agent/skills/webapp-testing/scripts/playwright_runner.py",
+      "required": false,
+      "timeout": 600,
+      "requires_url": true,
+      "scopes": ["release", "e2e"]
+    },
+    {
+      "name": "Mobile Audit",
+      "category": "Mobile",
+      "script": ".agent/skills/mobile-design/scripts/mobile_audit.py",
+      "required": false,
+      "timeout": 300,
+      "scopes": ["release", "mobile"]
+    },
+    {
+      "name": "i18n Check",
+      "category": "Internationalization",
+      "script": ".agent/skills/i18n-localization/scripts/i18n_checker.py",
+      "required": false,
+      "timeout": 240,
+      "scopes": ["release", "i18n"]
+    }
+  ]
+}

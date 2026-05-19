@@ -1,67 +1,58 @@
 ---
-description: Save information to persistent memory for cross-session recall. Stores preferences, conventions, decisions, and context.
+description: Save stable, non-sensitive information to persistent memory for cross-session recall.
 ---
 
-# /remember — Persistent Memory Management
+# /remember - Persistent Memory
 
 $ARGUMENTS
 
----
+## Rules
 
-## 🔴 CRITICAL RULES
+1. Load `.agent/skills/memory-system/SKILL.md`.
+2. Save only stable, useful, non-sensitive context.
+3. Do not save secrets, credentials, tokens, API keys, private keys, customer data, or temporary debug notes.
+4. Distill the memory into one short summary plus optional details.
+5. Update both the topic file and `.agent/memory/MEMORY.md`.
+6. Validate after saving.
 
-1. **Load memory-system skill** — Read `.agent/skills/memory-system/SKILL.md` first
-2. **Never auto-delete memories** — Always ask user before pruning
-3. **Keep index under 200 lines** — Warn if approaching limit
-4. **Distill, don't copy** — Save insights, not full conversations
+## Workflow
 
----
+1. Classify the memory:
+   - `user`
+   - `project`
+   - `decision`
+   - `feedback`
+   - `reference`
+2. Choose the matching topic file:
+   - `user-preferences.md`
+   - `project-conventions.md`
+   - `decisions.md`
+   - `feedback-history.md`
+   - `references.md`
+3. Save via helper when possible:
 
-## Task
-
-Use the `memory-system` skill to save information:
-
-```
-CONTEXT:
-- User wants to remember: $ARGUMENTS
-- Memory location: .agent/memory/
-
-WORKFLOW:
-1. CLASSIFY the information type: user | feedback | project | reference
-2. CHECK if relevant topic file exists in .agent/memory/
-3. SAVE to appropriate topic file (create if needed)
-4. UPDATE .agent/memory/MEMORY.md index with one-line pointer
-5. CONFIRM to user what was saved
-
-RULES:
-1. Follow memory-system/SKILL.md taxonomy
-2. Keep index entries under 150 characters
-3. Topic files must have frontmatter (type, created, updated)
-4. Don't save information derivable from code
-5. Don't save temporary debug context
+```powershell
+python .agent\scripts\memory.py save --type project --summary "$ARGUMENTS"
+python .agent\scripts\memory.py validate
 ```
 
----
+4. Confirm with:
 
-## Expected Output
-
-```
+```text
 [OK] Saved to memory
-
-Type: [user/feedback/project/reference]
-File: .agent/memory/[topic-file].md
-Entry: [one-line summary of what was saved]
-
-This will be available in future sessions.
+Type: <type>
+File: .agent/memory/<topic-file>.md
+Summary: <summary>
 ```
 
----
+## Search
 
-## Usage Examples
-
+```powershell
+python .agent\scripts\memory.py search "keyword"
 ```
-/remember I prefer using bun instead of npm
-/remember Our API uses JWT with httpOnly cookies
-/remember The production server is at api.example.com:8080
-/remember I like concise responses with tables
+
+## List
+
+```powershell
+python .agent\scripts\memory.py list
 ```

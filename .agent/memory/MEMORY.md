@@ -1,13 +1,32 @@
 # Memory Index
 
-This file stores durable project context for Antigravity workflows.
+This file is the lightweight routing map for durable, non-sensitive project memory.
 
-## Entries
+Read this index first. Open topic files only when an entry is relevant to the current task.
 
-No project memories have been recorded yet.
+## User
 
-## Maintenance Rules
+- No active user memories yet -> user-preferences.md
 
-- Add only stable decisions, architecture facts, conventions, and user preferences.
-- Do not store secrets, tokens, credentials, private personal data, or transient chat notes.
-- Link topic files from this index when they are created.
+## Project
+
+- No active project memories yet -> project-conventions.md
+
+## Decisions
+
+- No active decisions yet -> decisions.md
+
+## Feedback
+
+- No active feedback memories yet -> feedback-history.md
+
+## References
+
+- No active reference memories yet -> references.md
+
+## Rules
+
+- Store stable distilled context only.
+- Never store secrets, credentials, tokens, private keys, customer data, or sensitive personal data.
+- Prefer current repository files over memory when they conflict.
+- Archive stale entries only with user approval.

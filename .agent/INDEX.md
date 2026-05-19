@@ -13,10 +13,11 @@ This kit gives Antigravity a compact routing layer for production work:
 ## Start Here
 
 1. Read `.agent/rules/GEMINI.md`.
-2. Pick the smallest matching agent from `.agent/agents/`.
-3. Load only the skills named by that agent and relevant to the task.
-4. Use workflows only when the user asks for a repeatable flow or the task is complex enough to benefit from one.
-5. Run validation before declaring work complete.
+2. Read `.agent/memory/MEMORY.md` for meaningful work and open topic files only when relevant.
+3. Pick the smallest matching agent from `.agent/agents/`.
+4. Load only the skills named by that agent and relevant to the task.
+5. Use workflows only when the user asks for a repeatable flow or the task is complex enough to benefit from one.
+6. Run validation before declaring work complete.
 
 ## Core Agents
 
@@ -50,5 +51,6 @@ This kit gives Antigravity a compact routing layer for production work:
 
 ```powershell
 python .agent\scripts\validate_agent_kit.py .
+python .agent\scripts\memory.py --project . validate
 python .agent\scripts\checklist.py .
 ```
